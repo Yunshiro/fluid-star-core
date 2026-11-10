@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="zh-Hans" class="is-loading">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#07060b" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="description" content="流体星核。液态金属、星云，与署名 Yunn。一颗会随滚动重聚的 GPU 粒子星核。" />
+    <title>流体星核 · Fluid Star Core</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href="/fonts/cormorant-garamond-500-italic.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/noto-serif-sc-500.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/cormorant-garamond-500.woff2" as="font" type="font/woff2" crossorigin />
+    <style>
+      :root { --bg:#07060b; --ivory:#f4efe6; --muted:rgba(244,239,230,.62); --gold:#e4c4a0; --p:.06; --serif:"Noto Serif SC","Songti SC",serif; --latin:"Cormorant Garamond","Times New Roman",serif; }
+      html,body { margin:0; background:var(--bg); color:var(--ivory); }
+      html.is-loading, html.is-loading body { height:100%; overflow:hidden; }
+      body { font-family:var(--serif); }
+      #webgl { position:fixed; inset:0; width:100%; height:100%; display:block; background:var(--bg); }
+      #loader { position:fixed; inset:0; z-index:20; display:grid; place-items:center; background:var(--bg); }
+      .loader-glow { position:absolute; width:min(46vw,280px); height:min(46vw,280px); border-radius:50%; background:radial-gradient(circle, rgba(255,206,150,.55), rgba(120,70,180,.08) 46%, transparent 70%); }
+      .loader-center { position:relative; display:grid; justify-items:center; text-align:center; }
+      .ring { width:min(42vw,168px); height:min(42vw,168px); }
+      .ring-track,.ring-value { fill:none; stroke-width:1; }
+      .ring-track { stroke:rgba(244,239,230,.16); }
+      .ring-value { stroke:var(--gold); stroke-linecap:round; stroke-dasharray:389.56; stroke-dashoffset:calc(389.56 * (1 - var(--p))); transform-origin:70px 70px; transform:rotate(-90deg); }
+      .loader-en { font-family:var(--latin); font-style:italic; letter-spacing:.16em; color:var(--muted); margin:.85rem 0 0; }
+      .loader-title { margin:.15rem 0 0; font-size:clamp(2rem,6vw,3.4rem); font-weight:500; letter-spacing:.34em; text-indent:.34em; }
+      .loader-status { margin:.8rem 0 0; color:var(--muted); letter-spacing:.28em; font-size:.75rem; }
+      .loader-status b { margin-left:.8rem; font-family:var(--latin); font-style:italic; font-weight:500; color:var(--gold); }
+      #fallback { display:none; }
+      @font-face { font-family:"Cormorant Garamond"; src:url("/fonts/cormorant-garamond-500.woff2") format("woff2"); font-weight:500; font-style:normal; font-display:swap; }
+      @font-face { font-family:"Cormorant Garamond"; src:url("/fonts/cormorant-garamond-500-italic.woff2") format("woff2"); font-weight:500; font-style:italic; font-display:swap; }
+      @font-face { font-family:"Noto Serif SC"; src:url("/fonts/noto-serif-sc-500.woff2") format("woff2"); font-weight:500; font-style:normal; font-display:swap; unicode-range:U+3001-3002,U+4e00,U+4e0b,U+4e91,U+4f53,U+4f60,U+4fa7,U+505c,U+5149,U+5199,U+51dd,U+524d,U+52a8,U+540d,U+5411,U+5668,U+5728,U+57c3,U+5883,U+58f0,U+5b57,U+5c06,U+5c18,U+5c5e,U+5e26,U+5f00,U+5f53,U+5f97,U+5ff5,U+6001,U+6210,U+6216,U+6253,U+627f,U+6362,U+65e0,U+661f,U+6838,U+6cd5,U+6d41,U+6d4f,U+6db2,U+6ed1,U+73af,U+7528,U+7684,U+7cfb,U+7ec8,U+7ed3,U+7edf,U+7f72,U+800c,U+81ea,U+89c8,U+8bb0,U+8bf7,U+8f68,U+8f7d,U+8fd9,U+8ff9,U+91d1,U+968f,U+97f3,U+9897,U+ff0c; }
+    </style>
+    <script>
+      document.documentElement.style.setProperty('--p', '0.06');
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches || /(?:\?|&)motion=reduce(?:&|$)/.test(location.search)) {
+        document.documentElement.classList.add('reduce');
+      }
+    </script>
+  </head>
+  <body>
+    <canvas id="webgl" aria-hidden="true"></canvas>
+    <main id="story">
+      <section class="panel" aria-label="液态金属"></section>
+      <section class="panel" aria-label="星云"></section>
+      <section class="panel" aria-label="署名"></section>
+    </main>
+    <div class="progress" aria-hidden="true"><span id="progress-bar"></span></div>
+    <div class="hud">
+      <header class="hud-top">
+        <div class="brand">
+          <p class="brand-en">Fluid Star Core</p>
+          <p class="brand-zh">流体星核</p>
+        </div>
+        <p class="index"><span class="index-num" id="index-num">01</span><span class="index-name" id="index-name">液态金属</span></p>
+      </header>
+      <div></div>
+      <footer class="hud-bottom">
+        <div class="captions">
+          <p class="hint" id="hint"><i></i><span>向下滑动</span></p>
+          <article class="caption is-on" data-i="0">
+            <p class="caption-kicker"><span>01</span>液态金属</p>
+            <h2>液金随念而流</h2>
+          </article>
+          <article class="caption" data-i="1" aria-hidden="true">
+            <p class="caption-kicker"><span>02</span>星云</p>
+            <h2>星云记得你的轨迹</h2>
+          </article>
+          <article class="caption" data-i="2" aria-hidden="true">
+            <p class="caption-kicker"><span>03</span>署名</p>
+            <h2>尘埃终将写成你的名字</h2>
+          </article>
+        </div>
+        <button id="sound" type="button" aria-pressed="false" aria-label="开启声音">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 10h3l4-3v10l-4-3H4z" fill="currentColor"></path>
+            <path class="wave" d="M15 9.2c1.1.9 1.1 4.7 0 5.6" fill="none" stroke="currentColor" stroke-width="1.2"></path>
+            <path class="wave" d="M17.4 7.2c2 1.7 2 7.9 0 9.6" fill="none" stroke="currentColor" stroke-width="1.2"></path>
+            <path class="slash" d="M6 18.5 18.5 6" fill="none" stroke="currentColor" stroke-width="1.2"></path>
+          </svg>
+          <span>声音</span>
+        </button>
+      </footer>
+    </div>
+    <nav class="rail" aria-label="章节">
+      <button type="button" data-jump="0" class="is-on" aria-label="液态金属"><i></i></button>
+      <button type="button" data-jump="1" aria-label="星云"><i></i></button>
+      <button type="button" data-jump="2" aria-label="署名"><i></i></button>
+    </nav>
+    <div id="loader" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="6" aria-label="凝结星核">
+      <div class="loader-glow" aria-hidden="true"></div>
+      <div class="loader-center">
+        <svg class="ring" viewBox="0 0 140 140" aria-hidden="true">
+          <circle class="ring-track" cx="70" cy="70" r="62"></circle>
+          <circle class="ring-value" cx="70" cy="70" r="62"></circle>
+        </svg>
+        <p class="loader-en">Fluid Star Core</p>
+        <h1 class="loader-title">流体星核</h1>
+        <p class="loader-status"><span>凝结星核</span><b id="loader-pct">06</b></p>
+      </div>
+    </div>
+    <div id="cursor" aria-hidden="true"><b></b><i></i></div>
+    <aside id="debug" hidden>
+      <p>FLUID STAR CORE</p>
+      <ul>
+        <li><span>FPS</span><b id="d-fps">0</b></li>
+        <li><span>MS</span><b id="d-ms">0</b></li>
+        <li><span>TIER</span><b id="d-tier">—</b></li>
+        <li><span>PARTICLES</span><b id="d-count">0</b></li>
+        <li><span>DPR</span><b id="d-dpr">1</b></li>
+        <li><span>MORPH</span><b id="d-morph">0</b></li>
+        <li><span>BLOOM</span><b id="d-bloom">—</b></li>
+        <li><span>SIM</span><b id="d-sim">—</b></li>
+      </ul>
+    </aside>
+    <section id="fallback" aria-labelledby="fallback-title">
+      <div class="fallback-inner">
+        <div class="fallback-core" aria-hidden="true"></div>
+        <p class="loader-en">Fluid Star Core</p>
+        <h1 class="loader-title" id="fallback-title">流体星核</h1>
+        <p class="fallback-kicker">光停在这一侧</p>
+        <p class="fallback-copy">当前环境无法承载这颗星核。请换用 iPhone Safari、Android Chrome，或系统自带浏览器打开。</p>
+      </div>
+    </section>
+    <noscript>
+      <style>
+        #loader, #webgl, .hud, #story, #cursor, .rail, .progress { display:none !important; }
+        #fallback { display:flex !important; }
+      </style>
+    </noscript>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
