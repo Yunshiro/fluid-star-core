@@ -57,16 +57,21 @@ Query flags:
 
 ## Assets and licenses
 
-No external models, HDRIs, or audio files. Reflections come from a procedural environment rendered through `PMREMGenerator`. The glow sprite is a canvas gradient. The drone is a Web Audio graph. Simplex noise in the shaders is the public-domain Stefan Gustavson / Ashima Arts implementation.
+The project code is MIT. See [LICENSE](LICENSE). Third-party assets and libraries keep their own licenses.
+
+No external models, HDRIs, or audio files. Reflections come from a procedural environment rendered through `PMREMGenerator`. The glow sprite is a canvas gradient. The drone is a Web Audio graph.
 
 | Asset | Source | License |
 | --- | --- | --- |
-| Cormorant Garamond 500, roman and italic (latin subset) | [Cormorant Project](https://github.com/CatharsisFonts/Cormorant), vendored from Fontsource | SIL Open Font License 1.1 — `public/fonts/OFL-CormorantGaramond.txt` |
-| Noto Serif SC 500, interface glyph subset | [Noto CJK](https://github.com/notofonts/noto-cjk) via the Google Fonts API | SIL Open Font License 1.1 — `public/fonts/OFL-NotoSerifSC.txt`. Reserved name: Noto Serif SC |
+| Cormorant Garamond 500, roman and italic (latin subset) | [Cormorant Project](https://github.com/CatharsisFonts/Cormorant), files vendored from [Fontsource](https://github.com/fontsource/font-files) | SIL Open Font License 1.1 — `public/fonts/OFL-CormorantGaramond.txt` |
+| Noto Serif SC 500, interface glyph subset | [Noto CJK](https://github.com/notofonts/noto-cjk) via the [Google Fonts](https://fonts.google.com/noto/specimen/Noto+Serif+SC) API | SIL Open Font License 1.1 — `public/fonts/OFL-NotoSerifSC.txt`. Reserved name: Noto Serif SC |
+| Simplex noise in `src/shaders/noise.glsl` | [Ashima Arts / Stefan Gustavson webgl-noise](https://github.com/ashima/webgl-noise) | Public domain |
 | three.js r187 | [mrdoob/three.js](https://github.com/mrdoob/three.js) | MIT |
-| GSAP 3 and ScrollTrigger | [gsap.com](https://gsap.com/standard-license/) | Standard “no charge” license, including commercial use |
+| `@types/three` | [three-types/three-ts-types](https://github.com/three-types/three-ts-types) | MIT |
+| GSAP 3 and ScrollTrigger | [greensock/GSAP](https://github.com/greensock/GSAP) | [Standard no-charge license](https://gsap.com/standard-license/), including commercial use |
 | Lenis | [darkroomengineering/lenis](https://github.com/darkroomengineering/lenis) | MIT |
-| Vite | [vitejs](https://vitejs.dev) | MIT |
+| Vite | [vitejs/vite](https://github.com/vitejs/vite) | MIT |
+| TypeScript | [microsoft/TypeScript](https://github.com/microsoft/TypeScript) | Apache-2.0 |
 
 ## Notes
 
